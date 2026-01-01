@@ -3,12 +3,12 @@
 #Description: This file acts as a config file containing information for the other files in this program.
 
 #Scope
-TARGET_SUBNET = "192.168.10.50/24" #Base is set to scan the LAN's server
+TARGET_SUBNET = "192.168.10.0/24" #Base is set to my homelab's subnet
 
 #Discovery
-DISCOVERY_PORTS = [22, 80, 443]
+DISCOVERY_PORTS = [22, 80, 443] #Super common ports to scan quickly
 
-#Port scanning
+#Port scanning. Add extra port to be scanned here:
 COMMON_PORTS = [
     21,22,23,25,
     53,80,110,
@@ -17,8 +17,8 @@ COMMON_PORTS = [
 ]
 
 #Performance settings
-SOCKET_TIMEOUT = 0.5
-MAX_THREADS = 100
+SOCKET_TIMEOUT = 0.5 #Timeout in seconds if a connection cannot be established
+MAX_THREADS = 100 #Number of threads ThreadPoolExecutor will use
 
 #Output
-OUTPUT_DIR = "scans"
+OUTPUT_DIR = "scans" #Prefered name for output directory
