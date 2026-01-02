@@ -30,14 +30,15 @@ def readfile(path: str) -> dict:
     return results
 
 #This function compares two scan JSONs and returns the differences
-# as a dict, that gets saved later as another JSON.
+# as a dict, that gets saved later as another JSON. See above for
+# what this function looks for.
 def diff(old_dir: str, new_dir: str) -> dict:
     old_dict = readfile(old_dir)
     new_dict = readfile(new_dir)
-    old_hosts = set(old_dict.keys())
+    old_hosts = set(old_dict.keys())    #Taking hosts from old dict and new dict as we don't want their values here
     new_hosts = set(new_dict.keys())
     
-    diff = {
+    diff = {        #Defining structure
         "hosts": {
             "added": [],
             "removed": []
@@ -50,8 +51,8 @@ def diff(old_dir: str, new_dir: str) -> dict:
     }
     
     #host diff
-    diff["hosts"]["added"] = sorted(new_hosts - old_hosts)
-    diff["hosts"]["removed"] = sorted(old_hosts - new_hosts)
+    diff["hosts"]["added"] = sorted(new_hosts - old_hosts) #By subrtacting new hosts from old hosts we get the added hosts
+    diff["hosts"]["removed"] = sorted(old_hosts - new_hosts) #Vice versa
     
     #port diff
     common_hosts = old_hosts & new_hosts #We don't want to analyse ports on hosts that have been removed.

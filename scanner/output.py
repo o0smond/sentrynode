@@ -6,8 +6,9 @@
 import json
 import os
 from datetime import datetime
-from scanner import config
 
+#This function takes a dict and dumps it
+# into a json file in the specified directory.
 def save_to_json(results: dict, dir: str):
     os.makedirs(dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")

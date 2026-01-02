@@ -35,10 +35,10 @@ def scan_common_ports(hosts: list[str]) -> dict[str, list[int]]:
 #port scan is not enough.
 def scan_all_ports(host: str) -> list[int]:
     open_ports = []
-    with ThreadPoolExecutor(max_workers=config.MAX_THREADS) as executor:
+    with ThreadPoolExecutor(max_workers=config.MAX_THREADS) as executor: #Using a thread pool to speed up the scan
         futures = {
             executor.submit(discovery.tcp_probe, host, port): port
-            for port in range(1, 65536)
+            for port in range(1, 65536) #Scanning all ports
         }
 
         for future in as_completed(futures):

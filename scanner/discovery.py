@@ -32,7 +32,7 @@ def discover_hosts(subnet: str) -> list[str]:
     network = ipaddress.ip_network(subnet, strict=False)
     
     print(f"\nScanning {network} for hosts...")
-    with ThreadPoolExecutor(max_workers=config.MAX_THREADS) as executor:
+    with ThreadPoolExecutor(max_workers=config.MAX_THREADS) as executor:    #Using a thread pool to speed up the scan
         futures = {executor.submit(is_host_alive, str(ip)): str(ip) for ip in network.hosts()}
         
         for future in as_completed(futures):

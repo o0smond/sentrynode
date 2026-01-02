@@ -6,6 +6,7 @@
 import os
 from scanner import portscan, discovery, fingerprint, config, output, diff
 
+#Function for if the user wants to run a scan
 def scan_mode():
     #Ensuring settings are correct
     print("\nScan will be conducted with these settings:")
@@ -31,7 +32,9 @@ def scan_mode():
     #scan host ports
     hostports = portscan.scan_common_ports(hosts)
     
-    #print results and do optional full scan of some hosts.
+    #print results and do optional full scan of some hosts, as full scans
+    # are very resource heavy and can cause some rate limiting or other
+    # conecquences.
     print("\nactive hosts:")
     for host in hosts:
         print(f"{host}")
@@ -55,8 +58,7 @@ def scan_mode():
         else:
             print("Invalid ip address. Please try again.")
     
-    #Get banners and rewrite hostports to be a double nested dictionary.
-    # The final output will be stored in net_dict.
+    #fingerprinting each open port on each active host
     net_dict = {}
     
     for host in hostports:  #Initializing the nested dict
@@ -70,19 +72,23 @@ def scan_mode():
             if data == None:
                 print("An error occured while fingerprinting")
             net_dict[host][port] = data
+            
+    #Saving results to JSON
     output.save_to_json(net_dict, config.OUTPUT_DIR_SCAN)
     print(f"Results saved to JSON in {config.OUTPUT_DIR_SCAN}")
     
-    
+#Function for if the user wants to run an analysis
 def diff_mode():
-    print("Welcome to analysis mode. Please enter the names of two files to analyse. Files MUST be in the scan output directory.")
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    print("Welcome to analysis mode. Please enter the names of two files to analyse. Files MUST be in the scan output directory. Enter 'c' to cancel.")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))   #Determining current directory
     while True:
         name1 = input("\nFile 1 (older file):")
+        if name1.lower().strip() == "c":
+            break
         if not name1.endswith(".json"):
             print("missing .json or invalid file format")
         else:
-            dir1 = os.path.join(BASE_DIR, config.OUTPUT_DIR_SCAN, name1)
+            dir1 = os.path.join(BASE_DIR, config.OUTPUT_DIR_SCAN, name1)    #Determining path from current directory to file
             if not os.path.exists(dir1):
                 print("File is either not in scan output directory or does not exist")
             else:
@@ -90,6 +96,8 @@ def diff_mode():
         
     while True:
         name2 = input("\nFile 2 (newer file):")
+        if name1.lower().strip() == "c":
+            break
         if not name2.endswith(".json"):
             print("missing .json or invalid file format")
         else:
@@ -98,20 +106,28 @@ def diff_mode():
                 print("File is either not in scan output directory or does not exist")
             else:
                 break
-                
-    out = diff.diff(dir1, dir2)
-    output.save_to_json(out, config.OUTPUT_DIR_DIFF)
-    print(f"Results saved to JSON in {config.OUTPUT_DIR_DIFF}")
     
+    if name1.lower().strip() == "c" or name2.lower().strip() == "c":
+        print("Analysis cancelled.")
+    else:
+        #run analysis
+        out = diff.diff(dir1, dir2)
+        #save results
+        output.save_to_json(out, config.OUTPUT_DIR_DIFF)
+        print(f"Results saved to JSON in {config.OUTPUT_DIR_DIFF}")
     
+#Startup mode selection
 print("Welcome to SentryNode!")
 while True:
-    mode = input("Please enter mode: scan or analysis (s/a):").lower().strip()
+    mode = input("Please enter mode: scan or analysis or 'q' to quit (s/a):").lower().strip()
     if mode == "s":
         scan_mode()
         break
     elif mode == "a":
         diff_mode()
+        break
+    elif mode == "q":
+        print("Goodbye!")
         break
     else:
         print("Invalid input. Please type either 's' or 'a'.")

@@ -8,7 +8,8 @@ TARGET_SUBNET = "192.168.10.0/24" #Base is set to my homelab's subnet
 #Discovery
 DISCOVERY_PORTS = [22, 80, 443] #Super common ports to scan quickly
 
-#Port scanning. Add extra port to be scanned here:
+#These are the ports that get scanned by default before doing an optional full scan.
+# If you would like to add a port to scan, please add it to this list:
 COMMON_PORTS = [
     21,22,23,25,
     53,80,110,

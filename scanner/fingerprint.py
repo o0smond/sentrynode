@@ -17,6 +17,9 @@ def grab_banner(host:str, port:int) -> str | None:
     except Exception:
         return None
 
+#This function takes a banner and searches it for a service or
+# common things found within a service's banner and if one is found
+# returns the service as a string.
 def service_from_banner(banner: str | None) -> str | None:
     banner = banner.strip()
 
@@ -50,6 +53,9 @@ def service_from_banner(banner: str | None) -> str | None:
 
     return None
 
+#This function takes a port and checks it
+# against a dictionary of common ports and 
+# their services.
 def service_from_port(port: int) -> str | None:
     common_portmap = {
         21: "ftp",
@@ -92,17 +98,21 @@ def service_from_port(port: int) -> str | None:
     }
     return common_portmap.get(port)     #as dict.get() returns our str OR none by default
     
-
+#This function attempts to fingerprint most normal ports by
+# using the two abouve functions.
 def fingerprint_general(host: str, port: int) -> dict | None:
     try:
-        banner = grab_banner(host, port)
-        if banner != None:
+        banner = grab_banner(host, port) #grab banner
+        if banner != None:  #If there is a banner, check if it has a service
             service = service_from_banner(banner)
             certainty = "banner"
         else:
+            service = None
+        
+        if service == None: #If there is no banner service, guess at a service off the port
             service = service_from_port(port)
             certainty = "port"
-
+            
         if service == None:
             service = "unknown/no service"
             certainty = "N/A"
@@ -115,30 +125,33 @@ def fingerprint_general(host: str, port: int) -> dict | None:
     except Exception:
         return None
     
-#This function attempts to fingerprint HTTP ports as
+#This function attempts to fingerprint HTTP and HTTPS as
 #they are special and do not provide a banner upon
-#TCP connection like most ports.
+#TCP connection like most ports. Instead, this function
+#goes through their special connection process and
+#determines whether or not the port is running HTTP or HTTPS,
+#or if main.py should have the port scanned with the general scan.
 def fingerprint_http(host: str, port: int) -> dict | None:
     try: 
         with socket.create_connection((host, port), timeout=config.SOCKET_TIMEOUT) as sock:
             service = ""
-            try:
+            try:    #attempts to connect over TLS for HTTPS, if it fails, that means we assume we're on HTTP for now
                 context = ssl.create_default_context()
                 sock = context.wrap_socket(sock, server_hostname=host)
                 service = "https"
             except Exception:
                 service = "http"
-            request = f"HEAD / HTTP/1.1\r\nHost: {host}\r\n\r\n"
+            request = f"HEAD / HTTP/1.1\r\nHost: {host}\r\n\r\n" #Send request
             sock.sendall(request.encode())
             
-            response = sock.recv(2048).decode(errors="ignore")
+            response = sock.recv(2048).decode(errors="ignore") #Listen for response
             
-            if response.startswith("HTTP/"):
+            if response.startswith("HTTP/"): #If the response is an HTTP(S) response then:
                 return {
                     "service": service,
                     "response": response.split("\r\n")
                 }
-            else:
+            else:   #Otherwise get main to get general fingerprinting done on the port.
                 return None
     except Exception:
         return None
