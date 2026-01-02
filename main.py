@@ -117,7 +117,7 @@ def diff_mode():
         print(f"Results saved to JSON in {config.OUTPUT_DIR_DIFF}")
     
 #Startup mode selection
-print("Welcome to SentryNode!")
+print("\n   ███████╗ ███████╗ ███╗   ██╗ ████████╗ ██████╗ ██╗   ██╗\n   ██╔════╝ ██╔════╝ ████╗  ██║ ╚══██╔══╝ ██╔══██╗╚██╗ ██╔╝\n   ███████╗ █████╗   ██╔██╗ ██║    ██║    ██████╔╝ ╚████╔╝ \n   ╚════██║ ██╔══╝   ██║╚██╗██║    ██║    ██╔══██╗  ╚██╔╝  \n   ███████║ ███████╗ ██║ ╚████║    ██║    ██║  ██║   ██║   \n   ╚══════╝ ╚══════╝ ╚═╝  ╚═══╝    ╚═╝    ╚═╝  ╚═╝   ╚═╝   \n\n                      SENTRYNODE\n           network scanning & change detection\n\n")
 while True:
     mode = input("Please enter mode: scan or analysis or 'q' to quit (s/a):").lower().strip()
     if mode == "s":
