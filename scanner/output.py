@@ -8,11 +8,11 @@ import os
 from datetime import datetime
 from scanner import config
 
-def save_to_json(results: dict):
-    os.makedirs(config.OUTPUT_DIR, exist_ok=True)
+def save_to_json(results: dict, dir: str):
+    os.makedirs(dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     filename = f"{timestamp}.json"
-    path = os.path.join(config.OUTPUT_DIR, filename)
+    path = os.path.join(dir, filename)
     
     with open(path, "w") as f:
         json.dump(results, f, indent=4)

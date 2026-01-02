@@ -21,4 +21,5 @@ SOCKET_TIMEOUT = 0.5 #Timeout in seconds if a connection cannot be established
 MAX_THREADS = 100 #Number of threads ThreadPoolExecutor will use
 
 #Output
-OUTPUT_DIR = "scans" #Prefered name for output directory
+OUTPUT_DIR_SCAN = "scans" #Prefered name for SCAN output directory
+OUTPUT_DIR_DIFF = "analysis" #Prefered name for analysis output directory
