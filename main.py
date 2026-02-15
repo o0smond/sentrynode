@@ -3,7 +3,7 @@
 #Description: This file acts the main "controller" for the program, connecting
 # all the files together.
 
-import os
+import os, sys
 from scanner import portscan, discovery, fingerprint, config, output, diff
 
 #Function for if the user wants to run a scan
@@ -22,7 +22,7 @@ def scan_mode():
             break
         elif proceed == "n":
             print("Please update your settings in /scanner/config.py.")
-            break
+            sys.exit(0)
         else:
             print("Invalid input. Please type either 'y' or 'n'.")
             
