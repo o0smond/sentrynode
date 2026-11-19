@@ -1,11 +1,22 @@
 #By: Oliver Osmond
 #Created on: 2025-12-29
+#Updated on: 2026-11-19
 #Description: This file handles the discovery of active IP adresses on a network
 
 import socket
 import ipaddress
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from scanner import config
+
+#This function finds the subnet of the network this machine is on,
+# using the ip of the interface our internet traffic goes out of.
+# Raises OSError if there is no network connection.
+def local_subnet() -> str:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.connect(("8.8.8.8", 80))   #UDP connect sends no packets, it just picks the outgoing interface
+        ip = sock.getsockname()[0]
+    #shortcut: assumes a /24 (home network size), use -s for bigger or smaller networks
+    return str(ipaddress.ip_network(f"{ip}/24", strict=False))
 
 #This lower level function takes an ip address and
 #optionally a port and attempts connection to it.

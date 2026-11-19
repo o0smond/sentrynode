@@ -1,8 +1,10 @@
-# SentryNode
+<h1 align="center">SentryNode</h1>
 
-A lightweight, self-hosted network reconnaisance and monitoring tool.
+<p align="center">A lightweight, self-hosted network reconnaisance and monitoring tool.</p>
 
-<img width="607" height="230" alt="image" src="https://github.com/user-attachments/assets/9745ff57-0038-44b3-9a04-16e8038a2736" />
+<p align="center">
+  <img width="607" height="230" alt="image" src="https://github.com/user-attachments/assets/9745ff57-0038-44b3-9a04-16e8038a2736" />
+</p>
 
 ---
 ## Overview
@@ -48,15 +50,17 @@ This project is split into many logical components. Here is the basic structure:
 
 **main.py:** Entry point, argument parsing, scan orchestration, etc.
 
-**config.py**: "Settings" for the tool. User can set save directories, default ports to scan, the target subnet, etc. from here
+**config.py**: "Settings" for the tool. User can set save directories, default ports to scan, timeouts, etc. from here
 
 **discovery.py+portscan.py**: Host discovery (discovery.py) and port enumeration (portscan.py), both of which accellerated using ThreadPoolExecutor
 
 **fingerprint.py**: Port banner grabbing and service derivation
 
-**diff.py**: JSON analysis functions for analysis mode
+**diff.py**: Compares scans (from files or memory) and reports what changed
 
 **output.py**: JSON exporting functions
+
+**printer.py**: Prints scans and diffs as a colored terminal report
 
 ---
 ## Security and design philosiphy
@@ -79,13 +83,41 @@ SentryNode interacts on a **read-only basis** with other devices on the network 
 
 git clone https://github.com/o0smond/sentrynode
 
-**Run the program:**
+**Install as a command (optional):**
 
-python main.py
+```bash
+chmod +x main.py && ln -s "$PWD/main.py" ~/.local/bin/sentrynode
+```
 
-**or** 
+Or just run `python3 main.py` in place of `sentrynode` below.
 
-python3 main.py
+**Usage:**
+
+```
+sentrynode scan                          # one scan, printed, not saved
+sentrynode scan -f                       # one scan, auto-named file in scans/
+sentrynode scan -f me.json               # one scan, saved to me.json
+sentrynode scan -rfi 10 -n 7             # 7 scans, 10s apart, auto-named series file
+sentrynode scan -ri 5 -t 1800 -f me.json # scan every 5s for 30 minutes, into me.json
+sentrynode scan -ri 5 -n 10 -d           # 10 scans, then diff them (nothing saved)
+sentrynode diff me.json                  # diff each scan in a series against the one before
+sentrynode diff a.json b.json -f         # diff two single scans, auto-named file in analysis/
+sentrynode show me.json                  # print a saved file as a colored report
+```
+
+**scan flags:** `-r` repeat, `-i SEC` time from the start of one scan to the start of the next (default 60, must be longer than a scan takes), `-n N` number of scans,
+`-t SEC` total time, `-f [NAME]` save to file, `-d` diff when done, `-s SUBNET` subnet
+(default: the /24 of the network you're on), `--light` common ports
+from config.py only (default), `--full [IP ...]` all ports on every found host, or only the IPs given (slow).
+
+**diff flags:** `-f [NAME]` save to file. Put `-f` after the file names.
+
+`scan` and `diff` always print a colored report (ips yellow, ports green, values red).
+Add `--json` to print raw JSON instead, e.g. for piping into other tools.
+
+Defaults (ports, timeouts, threads, output folders) live in `scanner/config.py`.
+Every file SentryNode writes has a `"sentrynode"` tag at the top (`scan`, `series` or `diff`),
+and `diff` refuses files without it.
 
 ---
 ## What I learned
