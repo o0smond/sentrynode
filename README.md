@@ -80,11 +80,18 @@ git clone https://github.com/o0smond/sentrynode
 
 **Install as a command (optional):**
 
+Linux / macOS:
 ```bash
 chmod +x main.py && ln -s "$PWD/main.py" ~/.local/bin/sentrynode
 ```
 
-Or just run `python3 main.py` in place of `sentrynode` below.
+Windows (PowerShell, run from the repo folder, then open a new window):
+```powershell
+if (!(Test-Path $PROFILE)) { New-Item -Type File -Force $PROFILE }
+Add-Content $PROFILE "function sentrynode { py `"$PWD\main.py`" @args }"
+```
+
+Or just run `python3 main.py` (Windows: `py main.py`) in place of `sentrynode` below.
 
 ## Usage
 
