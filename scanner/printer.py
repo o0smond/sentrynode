@@ -119,7 +119,7 @@ def print_diff(d: dict):
         if count == 0:
             print("  no changes")
 
-#Quick visual check, run with: python -m scanner.printer
+
 if __name__ == "__main__":
     print_report({"sentrynode": "scan", "time": "t1", "subnet": "10.0.0.0/24", "mode": "full", "results": {
         "10.0.0.1": {
